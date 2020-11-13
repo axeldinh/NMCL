@@ -11,8 +11,8 @@ clear all
 data = 1;
 
 Plot = 0;
-Plot_fine = 1;
-Error = 0;
+Plot_fine = 0;
+Error = 1;
 
 switch data
         
@@ -42,6 +42,7 @@ b = 2;
 T = 2;
 
 err = [];
+p = 1; %for the p norm
 
 if Error
     Dx = logspace(-1,-4,10);
@@ -52,7 +53,7 @@ end
 
 %% Discretization very fine mesh
 
-Dx_fine = 0.00001;
+Dx_fine = 1e-5;
 for dx = Dx_fine
     dt = 1;
 
@@ -159,17 +160,28 @@ for dx = Dx
             pause(.01)
         end
     end
-    err = [err, max(max(U-fine_to_current(U_fine, Dx_fine, dx, a, a)))];
+    err = [err, p_error(U, fine_to_current(U_fine, Dx_fine, dx, a, b), dx, p)];
 end
 
 if Error
     
     figure()
-    loglog(Dx, err, 'DisplayName', 'Error')
+    subplot(2,1,1)
+    loglog(Dx, err(1,:), 'DisplayName', 'Error on height')
     hold on
-    loglog(err, err, 'DisplayName', 'o(dx)')
+    loglog(Dx, Dx, 'DisplayName', 'o(dx)')
     xlabel('dx')
-    ylabel('L inf error')
+    ylabel('L_inf error')
+    title("error in norm " + num2str(p) + " of the height")
+    legend show
+    
+    subplot(2,1,2)
+    loglog(Dx, err(2,:), 'DisplayName', 'Error on discharge')
+    hold on
+    loglog(Dx, Dx, 'DisplayName', 'o(dx)')
+    xlabel('dx')
+    ylabel('L_inf error')
+    title("error in norm " + num2str(p) + " of the discharge")
     legend show
     
 end

@@ -43,9 +43,10 @@ b = 2;
 T = 2;
 
 err = [];
+p = 1; % for the p_norm
 
 if Error
-    Dx = [0.1, 0.01, 0.001, 0.0001];
+    Dx = logspace(-1,-4,10);
 else
     Dx = 0.01;
 end
@@ -96,6 +97,7 @@ for dx = Dx
             subplot(2,1,1)
             xlim([0,2])
             ylim([0,1.5])
+            
             plot(x,U(1,:), 'DisplayName', 'Approximation')
             hold on
             plot(x, U_ex(1,:), '--', 'DisplayName', 'Exact')
@@ -117,17 +119,33 @@ for dx = Dx
 
 
     end
-    err = [err, max(max(U-U_exact(x,time)))];
+    err = [err, p_error(U, U_exact(x,time), dx, p)];
 end
 
 if Error
     
+    order_height = (log(e(1,1)) - log(e(1,end)))/(log(Dx(1))-log(Dx(end)));
+    order_height = round(order_height);
+    order_discharge = (log(e(2,1)) - log(e(2,end)))/(log(Dx(1))-log(Dx(end)));
+    order_discharge = round(order_discharge);
+    
     figure()
-    loglog(Dx, err, 'DisplayName', 'Error')
+    subplot(2,1,1)
+    loglog(Dx, err(1,:), 'DisplayName', 'Error on height')
     hold on
-    loglog(err, err, 'DisplayName', 'o(dx)')
+    loglog(Dx, Dx.^order_height, 'DisplayName', 'o^'+num2str(order_height))
     xlabel('dx')
     ylabel('L_inf error')
+    title("error in norm " + num2str(p) + " of the height")
+    legend show
+    
+    subplot(2,1,2)
+    loglog(Dx, err(2,:), 'DisplayName', 'Error on discharge')
+    hold on
+    loglog(Dx, Dx.^order_discharge, 'DisplayName', 'o^'+num2str(order_discharge))
+    xlabel('dx')
+    ylabel('L_inf error')
+    title("error in norm " + num2str(p) + " of the discharge")
     legend show
     
 end
