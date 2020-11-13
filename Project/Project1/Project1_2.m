@@ -45,7 +45,7 @@ err = [];
 p = 1; %for the p norm
 
 if Error
-    Dx = logspace(-1,-4,10);
+    Dx = logspace(-1,-2,10);
 else
     Dx = 0.1;
 end
@@ -53,7 +53,7 @@ end
 
 %% Discretization very fine mesh
 
-Dx_fine = 1e-5;
+Dx_fine = 1e-3; % WARNING: should be less than Dx (otherwise we divide by 0 when doing log(err))
 for dx = Dx_fine
     dt = 1;
 
@@ -165,11 +165,16 @@ end
 
 if Error
     
+    order_height = (log(err(1,1)) - log(err(1,end)))/(log(Dx(1))-log(Dx(end)));
+    order_height = round(order_height);
+    order_discharge = (log(err(2,1)) - log(err(2,end)))/(log(Dx(1))-log(Dx(end)));
+    order_discharge = round(order_discharge);
+    
     figure()
     subplot(2,1,1)
     loglog(Dx, err(1,:), 'DisplayName', 'Error on height')
     hold on
-    loglog(Dx, Dx, 'DisplayName', 'o(dx)')
+    loglog(Dx, Dx.^order_height, 'DisplayName', "o(h^"+num2str(order_height)+")")
     xlabel('dx')
     ylabel('L_inf error')
     title("error in norm " + num2str(p) + " of the height")
@@ -178,7 +183,7 @@ if Error
     subplot(2,1,2)
     loglog(Dx, err(2,:), 'DisplayName', 'Error on discharge')
     hold on
-    loglog(Dx, Dx, 'DisplayName', 'o(dx)')
+    loglog(Dx, Dx.^order_discharge, 'DisplayName', "o(h^"+num2str(order_discharge)+")")
     xlabel('dx')
     ylabel('L_inf error')
     title("error in norm " + num2str(p) + " of the discharge")
