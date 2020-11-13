@@ -45,7 +45,7 @@ err = [];
 p = 1; %for the p norm
 
 if Error
-    Dx = logspace(-1,-2,10);
+    Dx = logspace(-1,-4,10);
 else
     Dx = 0.1;
 end
@@ -53,7 +53,7 @@ end
 
 %% Discretization very fine mesh
 
-Dx_fine = 1e-3; % WARNING: should be less than Dx (otherwise we divide by 0 when doing log(err))
+Dx_fine = 1e-5; % WARNING: should be less than Dx (otherwise we divide by 0 when doing log(err))
 for dx = Dx_fine
     dt = 1;
 
