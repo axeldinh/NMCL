@@ -1,11 +1,11 @@
-function U_ext =  apply_bc(U, bc)
+function U_ext =  apply_bc(U, bc, n)
 
 switch bc
     
     case 'Periodic'
-        U_ext = [U(:,end), U, U(:,1)];
+        U_ext = [U(:, end-n+1:end), U, U(:,1:n)];
         
     case 'Open'
-        U_ext = [U(:,1), U, U(:,end)];
+        U_ext = [repmat(U(:,1),1,n), U, repmat(U(:,end),1,n)];
         
 end
